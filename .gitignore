@@ -17,3 +17,5 @@ mysqldata/
 
 # Environment
 .env
+
+.claude/*
