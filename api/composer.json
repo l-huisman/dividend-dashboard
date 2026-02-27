@@ -2,7 +2,7 @@
     "require": {
         "php": "^8.4",
         "bramus/router": "^1.6",
-        "firebase/php-jwt": "^6.10"
+        "firebase/php-jwt": "^6.11"
     },
     "require-dev": {
         "laravel/pint": "^1.18",
@@ -15,6 +15,12 @@
             "Models\\": "models",
             "Repositories\\": "repositories",
             "Middleware\\": "middleware"
+        }
+    },
+    "config": {
+        "audit": {
+            "abandoned": "report",
+            "block-insecure": false
         }
     },
     "scripts": {
