@@ -78,6 +78,12 @@ class StockService
 
     public function create(Stock $stock): Stock
     {
+        $existing = $this->repository->getByTicker($stock->ticker);
+
+        if ($existing !== null) {
+            return $existing;
+        }
+
         return $this->repository->create($stock);
     }
 
