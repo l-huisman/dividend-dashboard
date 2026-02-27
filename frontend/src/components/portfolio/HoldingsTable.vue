@@ -30,7 +30,7 @@
         </thead>
         <tbody>
           <tr
-            v-for="row in sortedRows"
+            v-for="row in paginatedRows"
             :key="row.id"
             class="border-b border-slate-100 last:border-0 dark:border-slate-700/50"
           >
@@ -62,6 +62,40 @@
       </table>
     </div>
 
+    <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+      <div class="flex items-center gap-2">
+        <label class="text-xs text-slate-500 dark:text-slate-400">Per page</label>
+        <select
+          v-model.number="perPage"
+          class="rounded border border-slate-300 bg-white px-2 py-1 text-xs dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+        >
+          <option :value="10">10</option>
+          <option :value="25">25</option>
+          <option :value="50">50</option>
+        </select>
+      </div>
+      <div class="flex items-center gap-1">
+        <button
+          :disabled="currentPage <= 1"
+          @click="currentPage--"
+          class="rounded px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-40 dark:text-slate-300 dark:hover:bg-slate-700"
+        >
+          Prev
+        </button>
+        <span class="px-2 text-xs tabular-nums text-slate-500 dark:text-slate-400">
+          {{ (currentPage - 1) * perPage + 1 }}-{{ Math.min(currentPage * perPage, sortedRows.length) }}
+          of {{ sortedRows.length }}
+        </span>
+        <button
+          :disabled="currentPage >= totalPages"
+          @click="currentPage++"
+          class="rounded px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-40 dark:text-slate-300 dark:hover:bg-slate-700"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+
     <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
       {{ sortedRows.length }} of {{ holdings.length }} holdings
     </p>
@@ -69,7 +103,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/vue/20/solid'
 import { formatEur, formatPct, formatNumber } from '../../utils/format'
 
@@ -89,6 +123,24 @@ const props = defineProps({
 const search = ref('')
 const sortCol = ref('ticker')
 const sortDir = ref('asc')
+
+const perPage = ref(10)
+const currentPage = ref(1)
+
+const totalPages = computed(() => Math.ceil(sortedRows.value.length / perPage.value))
+
+const paginatedRows = computed(() => {
+  const start = (currentPage.value - 1) * perPage.value
+  return sortedRows.value.slice(start, start + perPage.value)
+})
+
+watch([search, sortCol, sortDir], () => {
+  currentPage.value = 1
+})
+
+watch(perPage, () => {
+  currentPage.value = 1
+})
 
 function toggleSort(key) {
   if (sortCol.value === key) {
