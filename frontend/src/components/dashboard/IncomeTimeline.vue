@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
+  <div class="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-800 sm:p-5">
     <div class="mb-4">
       <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">Monthly Income Timeline</h3>
       <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
@@ -11,7 +11,7 @@
     <div v-if="timeline.length > 0" class="relative">
       <!-- Floating Y-axis overlay -->
       <div
-        class="pointer-events-none absolute bottom-[50px] left-0 top-0 z-10 flex w-16 flex-col justify-between py-2 pl-1"
+        class="pointer-events-none absolute bottom-[40px] left-0 top-0 z-10 flex w-12 flex-col justify-between py-2 ml-[-1px] mb-[-12px] pb-[20px]"
         :style="{
           background: isDark
             ? 'linear-gradient(to right, rgb(30 41 59) 80%, transparent)'
@@ -21,7 +21,7 @@
         <span
           v-for="(tick, i) in yTicks"
           :key="i"
-          class="pr-2 text-right text-[11px] tabular-nums text-slate-400 dark:text-slate-500"
+          class="pr-4 text-right text-[11px] tabular-nums text-slate-400"
         >
           {{ formatYTick(tick) }}
         </span>
@@ -30,7 +30,7 @@
       <!-- Scrollable chart container -->
       <div
         ref="scrollEl"
-        class="scrollbar-dark overflow-x-auto overflow-y-hidden pl-16"
+        class="scrollbar-dark overflow-x-auto overflow-y-hidden pl-12 sm:pl-16"
         style="scrollbar-width: thin; -webkit-overflow-scrolling: touch"
         @scroll="handleScroll"
       >
@@ -161,7 +161,7 @@
     </div>
 
     <!-- Footer -->
-    <div v-if="timeline.length > 0" class="mt-2 flex items-center justify-between text-xs">
+    <div v-if="timeline.length > 0" class="mt-2 flex flex-wrap items-center justify-between gap-1 text-xs">
       <span class="text-slate-400 dark:text-slate-500">Scroll to explore</span>
       <span class="text-slate-500 dark:text-slate-400">
         {{ formatEur(todayAnnual) }}/yr
