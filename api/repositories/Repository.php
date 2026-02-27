@@ -13,13 +13,29 @@ class Repository
 
     public function __construct()
     {
-        require __DIR__ . '/../dbconfig.php';
+        /** @var array{type: string, host: string, database: string, username: string, password: string} $config */
+        $config = (static function (): array {
+            require __DIR__ . '/../dbconfig.php';
+
+            /** @var string $type */
+            /** @var string $host */
+            /** @var string $database */
+            /** @var string $username */
+            /** @var string $password */
+            return [
+                'type' => $type,
+                'host' => $host,
+                'database' => $database,
+                'username' => $username,
+                'password' => $password,
+            ];
+        })();
 
         try {
             $this->connection = new PDO(
-                "{$type}:host={$host};dbname={$database}",
-                $username,
-                $password
+                "{$config['type']}:host={$config['host']};dbname={$config['database']}",
+                $config['username'],
+                $config['password']
             );
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {

@@ -17,6 +17,9 @@ class UserService
         $this->repository = new UserRepository();
     }
 
+    /**
+     * @return array{token: string, user: array<string, mixed>}|null
+     */
     public function login(string $email, string $password): ?array
     {
         $user = $this->repository->findByEmail($email);
@@ -31,6 +34,9 @@ class UserService
         ];
     }
 
+    /**
+     * @return array{token: string, user: array<string, mixed>}|null
+     */
     public function register(string $username, string $email, string $password): ?array
     {
         $existing = $this->repository->findByEmail($email);
@@ -65,6 +71,9 @@ class UserService
         return JWT::encode($payload, $secretKey, 'HS256');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function sanitizeUser(User $user): array
     {
         return [

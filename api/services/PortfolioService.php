@@ -28,6 +28,7 @@ class PortfolioService
      * Compute portfolio summary from holdings.
      *
      * @param Holding[] $holdings
+     * @return array<string, float|int>
      */
     public function computeSummary(array $holdings): array
     {
@@ -68,6 +69,7 @@ class PortfolioService
      * Compute sector breakdown by value and by dividend.
      *
      * @param Holding[] $holdings
+     * @return array<string, list<array{name: string, value: float}>>
      */
     public function computeSectors(array $holdings): array
     {
@@ -88,13 +90,13 @@ class PortfolioService
         foreach ($byValue as $name => $value) {
             $byValueArray[] = ['name' => $name, 'value' => round($value, 2)];
         }
-        usort($byValueArray, fn(array $a, array $b) => $b['value'] <=> $a['value']);
+        usort($byValueArray, fn (array $a, array $b) => $b['value'] <=> $a['value']);
 
         $byDividendArray = [];
         foreach ($byDividend as $name => $value) {
             $byDividendArray[] = ['name' => $name, 'value' => round($value, 2)];
         }
-        usort($byDividendArray, fn(array $a, array $b) => $b['value'] <=> $a['value']);
+        usort($byDividendArray, fn (array $a, array $b) => $b['value'] <=> $a['value']);
 
         return [
             'by_value' => $byValueArray,
@@ -106,6 +108,7 @@ class PortfolioService
      * Compute dividend calendar: monthly income, upcoming dividends, investment windows.
      *
      * @param Holding[] $holdings
+     * @return array<string, list<array<string, mixed>>>
      */
     public function computeCalendar(array $holdings): array
     {
@@ -120,6 +123,7 @@ class PortfolioService
      * Compute monthly dividend income across all 12 months.
      *
      * @param Holding[] $holdings
+     * @return list<array{month: string, income: float}>
      */
     private function computeMonthlyIncome(array $holdings): array
     {
@@ -170,6 +174,7 @@ class PortfolioService
      * Compute upcoming dividend events sorted by nearest event date.
      *
      * @param Holding[] $holdings
+     * @return list<array<string, mixed>>
      */
     private function computeUpcomingDividends(array $holdings): array
     {
@@ -220,7 +225,7 @@ class PortfolioService
             ];
         }
 
-        usort($upcoming, fn(array $a, array $b) => $a['_sort_days'] <=> $b['_sort_days']);
+        usort($upcoming, fn (array $a, array $b) => $a['_sort_days'] <=> $b['_sort_days']);
 
         // Remove internal sort key
         return array_map(function (array $item) {
@@ -249,6 +254,7 @@ class PortfolioService
      * Compute investment windows: stocks grouped by nearby ex-dividend dates.
      *
      * @param Holding[] $holdings
+     * @return list<array<string, mixed>>
      */
     private function computeInvestmentWindows(array $holdings): array
     {
@@ -291,7 +297,7 @@ class PortfolioService
         }
 
         // Sort candidates by buy_by date
-        usort($candidates, fn(array $a, array $b) => $a['buy_by_ts'] <=> $b['buy_by_ts']);
+        usort($candidates, fn (array $a, array $b) => $a['buy_by_ts'] <=> $b['buy_by_ts']);
 
         // Group stocks with buy_by dates within 7 days of each other
         $windows = [];
@@ -345,7 +351,7 @@ class PortfolioService
         }
 
         // Sort by total_dividend descending
-        usort($windows, fn(array $a, array $b) => $b['total_dividend'] <=> $a['total_dividend']);
+        usort($windows, fn (array $a, array $b) => $b['total_dividend'] <=> $a['total_dividend']);
 
         // Return top 5
         return array_slice($windows, 0, 5);
@@ -354,7 +360,7 @@ class PortfolioService
     /**
      * DRIP growth projection.
      *
-     * @return array<int, array{year: int, label: string, portfolio_value: int, total_contributed: int, annual_dividends: float, monthly_dividends: float, yield_on_cost: float}>
+     * @return list<array{year: int, label: string, portfolio_value: int, total_contributed: int, annual_dividends: float, monthly_dividends: float, yield_on_cost: float}>
      */
     public function projectGrowth(
         float $startValueEur,

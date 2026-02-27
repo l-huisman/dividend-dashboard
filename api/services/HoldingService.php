@@ -19,6 +19,9 @@ class HoldingService
         $this->stockRepository = new StockRepository();
     }
 
+    /**
+     * @return Holding[]
+     */
     public function getAllForUser(int $userId, ?string $sort, ?string $direction): array
     {
         return $this->holdingRepository->getAllForUser($userId, $sort, $direction);
@@ -75,6 +78,9 @@ class HoldingService
         return true;
     }
 
+    /**
+     * @return array{imported: int, skipped: int, unknown: list<string>}
+     */
     public function importCsv(int $userId, string $csvContent): array
     {
         $lines = explode("\n", trim($csvContent));

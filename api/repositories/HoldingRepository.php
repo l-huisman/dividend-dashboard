@@ -10,6 +10,9 @@ use PDO;
 
 class HoldingRepository extends Repository
 {
+    /**
+     * @return Holding[]
+     */
     public function getAllForUser(int $userId, ?string $sort = null, ?string $direction = null): array
     {
         $allowed = ['ticker', 'name', 'shares', 'invested', 'dividend_yield', 'sector'];
@@ -107,6 +110,9 @@ class HoldingRepository extends Repository
         $stmt->execute(['id' => $id, 'user_id' => $userId]);
     }
 
+    /**
+     * @param array<string, mixed> $row
+     */
     private function rowToHolding(array $row): Holding
     {
         $holding = new Holding();

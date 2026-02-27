@@ -9,6 +9,9 @@ class YahooFinanceService
     private const CHART_URL = 'https://query1.finance.yahoo.com/v8/finance/chart/';
     private const SUMMARY_URL = 'https://query1.finance.yahoo.com/v10/finance/quoteSummary/';
 
+    /**
+     * @return array{price: float, dividend_per_share: float, dividend_yield: float, sector: string, ex_dividend_date: string|null, name: string}|null
+     */
     public function fetchQuote(string $ticker): ?array
     {
         $context = stream_context_create([

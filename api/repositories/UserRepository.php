@@ -53,6 +53,9 @@ class UserRepository extends Repository
         return $this->findById($id);
     }
 
+    /**
+     * @return User[]
+     */
     public function getAll(int $page, int $limit): array
     {
         $offset = ($page - 1) * $limit;
@@ -100,6 +103,9 @@ class UserRepository extends Repository
         $stmt->execute(['id' => $id]);
     }
 
+    /**
+     * @param array<string, mixed> $row
+     */
     private function rowToUser(array $row): User
     {
         $user = new User();

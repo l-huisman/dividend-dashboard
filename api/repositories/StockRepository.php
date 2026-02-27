@@ -9,6 +9,9 @@ use PDO;
 
 class StockRepository extends Repository
 {
+    /**
+     * @return Stock[]
+     */
     public function getAll(int $page, int $limit, ?string $search, ?string $sector, string $sort, string $direction): array
     {
         $allowed = ['ticker', 'name', 'price', 'dividend_yield', 'sector'];
@@ -182,6 +185,9 @@ class StockRepository extends Repository
         return (int) $stmt->fetchColumn();
     }
 
+    /**
+     * @return list<int>
+     */
     public function getPaymentMonths(int $stockId): array
     {
         $stmt = $this->connection->prepare(
@@ -198,6 +204,9 @@ class StockRepository extends Repository
         return $months;
     }
 
+    /**
+     * @param list<int> $months
+     */
     public function setPaymentMonths(int $stockId, array $months): void
     {
         $stmt = $this->connection->prepare('DELETE FROM stock_payment_months WHERE stock_id = :stock_id');
@@ -215,6 +224,9 @@ class StockRepository extends Repository
         }
     }
 
+    /**
+     * @param array<string, mixed> $row
+     */
     private function rowToStock(array $row): Stock
     {
         $stock = new Stock();

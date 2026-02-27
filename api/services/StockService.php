@@ -18,6 +18,9 @@ class StockService
         $this->yahoo = new YahooFinanceService();
     }
 
+    /**
+     * @return array{data: Stock[], page: int, limit: int, total: int}
+     */
     public function getAll(int $page, int $limit, ?string $search, ?string $sector, string $sort, string $direction): array
     {
         $stocks = $this->repository->getAll($page, $limit, $search, $sector, $sort, $direction);
