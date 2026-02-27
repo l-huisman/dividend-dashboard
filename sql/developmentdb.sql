@@ -53,6 +53,23 @@ CREATE TABLE `holdings` (
     CONSTRAINT `fk_holdings_stock` FOREIGN KEY (`stock_id`) REFERENCES `stocks` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `transactions` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `user_id` INT NOT NULL,
+    `stock_id` INT NOT NULL,
+    `type` ENUM('buy','sell') NOT NULL DEFAULT 'buy',
+    `shares` DECIMAL(14,8) NOT NULL DEFAULT 0.00000000,
+    `price_per_share` DECIMAL(12,4) NOT NULL DEFAULT 0.0000,
+    `total_amount` DECIMAL(14,4) NOT NULL DEFAULT 0.0000,
+    `executed_at` DATE DEFAULT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `fk_transactions_user` (`user_id`),
+    KEY `fk_transactions_stock` (`stock_id`),
+    CONSTRAINT `fk_transactions_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_transactions_stock` FOREIGN KEY (`stock_id`) REFERENCES `stocks` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `stock_payment_months` (
     `stock_id` INT NOT NULL,
     `month` TINYINT NOT NULL,

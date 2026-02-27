@@ -39,7 +39,11 @@ $router->get('/holdings/(\d+)', 'HoldingController@getOne');
 $router->post('/holdings', 'HoldingController@create');
 $router->put('/holdings/(\d+)', 'HoldingController@update');
 $router->delete('/holdings/(\d+)', 'HoldingController@delete');
+$router->post('/holdings/(\d+)/sell', 'HoldingController@sell');
 $router->post('/holdings/import', 'HoldingController@import');
+
+// Transactions (authenticated, own user)
+$router->get('/transactions', 'TransactionController@getAll');
 
 // Users (admin only)
 $router->get('/users', 'UserController@getAll');

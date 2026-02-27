@@ -90,6 +90,12 @@ export const usePortfolioStore = defineStore('portfolio', {
       return data
     },
 
+    async sellHolding(id, shares) {
+      const { data } = await api.post(`/holdings/${id}/sell`, { shares })
+      await this.fetchAll()
+      return data
+    },
+
     async deleteHolding(id) {
       await api.delete(`/holdings/${id}`)
       await this.fetchAll()
