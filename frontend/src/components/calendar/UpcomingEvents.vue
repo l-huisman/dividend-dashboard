@@ -1,12 +1,15 @@
 <template>
   <div class="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
     <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">Upcoming Dividends</h3>
-    <div v-if="events.length === 0" class="mt-3 text-sm text-slate-500 dark:text-slate-400">
+    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+      Next ex-dividend and payment dates for your holdings. Buy before the ex-dividend date to qualify for the next payment.
+    </p>
+    <div v-if="activeEvents.length === 0" class="mt-3 text-sm text-slate-500 dark:text-slate-400">
       No upcoming events.
     </div>
     <div v-else class="mt-3 divide-y divide-slate-100 dark:divide-slate-700/50">
       <div
-        v-for="e in events"
+        v-for="e in activeEvents"
         :key="e.ticker"
         class="flex items-center justify-between py-3 first:pt-0 last:pb-0"
       >
@@ -34,13 +37,18 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { formatEur } from '../../utils/format'
 
-defineProps({
+const props = defineProps({
   events: {
     type: Array,
     required: true,
   },
+})
+
+const activeEvents = computed(() => {
+  return props.events.filter((e) => e.days_until_ex >= 0)
 })
 
 function daysBadgeClass(days) {
