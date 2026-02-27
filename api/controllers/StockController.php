@@ -77,7 +77,7 @@ class StockController extends Controller
 
     public function create(): void
     {
-        AuthMiddleware::requireAdmin();
+        AuthMiddleware::requireAuth();
 
         $body = $this->getRequestBody();
 

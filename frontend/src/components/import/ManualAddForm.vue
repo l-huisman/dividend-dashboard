@@ -106,7 +106,7 @@
             <input
               v-model.number="newStock.price"
               type="number"
-              step="0.01"
+              step="any"
               min="0"
               required
               class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm tabular-nums text-slate-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
@@ -117,7 +117,7 @@
             <input
               v-model.number="newStock.dividend_per_share"
               type="number"
-              step="0.01"
+              step="any"
               min="0"
               required
               class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm tabular-nums text-slate-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
