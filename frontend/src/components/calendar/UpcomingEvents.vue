@@ -2,37 +2,39 @@
   <div class="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
     <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">Upcoming Dividends</h3>
     <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-      Next ex-dividend and payment dates for your holdings. Buy before the ex-dividend date to qualify for the next payment.
+      Buy before the ex-dividend date to qualify for the next payment.
     </p>
     <div v-if="activeEvents.length === 0" class="mt-3 text-sm text-slate-500 dark:text-slate-400">
       No upcoming events.
     </div>
-    <div v-else class="mt-3 divide-y divide-slate-100 dark:divide-slate-700/50">
-      <div
-        v-for="e in activeEvents"
-        :key="e.ticker"
-        class="flex items-center justify-between py-3 first:pt-0 last:pb-0"
-      >
-        <div class="min-w-0 flex-1">
-          <p class="text-sm font-medium text-slate-800 dark:text-slate-100">{{ e.ticker }}</p>
-          <p class="truncate text-xs text-slate-500 dark:text-slate-400">{{ e.name }}</p>
-        </div>
-        <div class="ml-4 text-right">
-          <div class="flex items-center justify-end gap-2">
-            <span class="text-xs text-slate-500 dark:text-slate-400">Ex-div</span>
+    <table v-else class="mt-3 w-full text-sm">
+      <thead>
+        <tr class="border-b border-slate-200 text-xs text-slate-400 dark:border-slate-700 dark:text-slate-500">
+          <th class="pb-2 text-left font-medium">Stock</th>
+          <th class="pb-2 text-right font-medium">Ex-div</th>
+          <th class="pb-2 text-right font-medium">Payment</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+        <tr v-for="e in activeEvents" :key="e.ticker">
+          <td class="py-1.5">
+            <span class="font-medium text-slate-800 dark:text-slate-100">{{ e.ticker }}</span>
+            <span class="ml-1.5 text-xs text-slate-400 dark:text-slate-500">{{ e.name }}</span>
+          </td>
+          <td class="py-1.5 text-right">
             <span
-              class="rounded-full px-2 py-0.5 text-xs font-medium"
+              class="inline-block rounded-full px-2 py-0.5 text-xs font-medium"
               :class="daysBadgeClass(e.days_until_ex)"
             >
-              {{ e.days_until_ex >= 0 ? e.days_until_ex + 'd' : 'Passed' }}
+              {{ e.days_until_ex + 'd' }}
             </span>
-          </div>
-          <p class="mt-0.5 text-sm font-medium tabular-nums text-emerald-500 dark:text-emerald-400">
+          </td>
+          <td class="py-1.5 text-right tabular-nums font-medium text-emerald-500 dark:text-emerald-400">
             {{ formatEur(e.per_payment) }}
-          </p>
-        </div>
-      </div>
-    </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 

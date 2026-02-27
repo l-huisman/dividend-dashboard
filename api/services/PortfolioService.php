@@ -135,6 +135,10 @@ class PortfolioService
             $numPayments = count($paymentMonths);
 
             if ($numPayments === 0) {
+                $perMonthUsd = ($holding->shares * $stock->dividend_per_share) / 12;
+                for ($m = 0; $m < 12; $m++) {
+                    $monthlyTotals[$m] += $perMonthUsd;
+                }
                 continue;
             }
 
