@@ -1,6 +1,9 @@
 <template>
   <div class="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
     <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">Portfolio Growth</h3>
+    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+      {{ '\u20AC' }}{{ monthly }}/mo + DRIP + {{ priceGrowth.toFixed(1) }}% price growth
+    </p>
     <div class="mt-3" style="height: 300px">
       <Line :data="chartData" :options="chartOptions" />
     </div>
@@ -30,6 +33,14 @@ const props = defineProps({
   data: {
     type: Array,
     required: true,
+  },
+  monthly: {
+    type: Number,
+    default: 0,
+  },
+  priceGrowth: {
+    type: Number,
+    default: 0,
   },
 })
 

@@ -1,6 +1,7 @@
 <template>
   <div class="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
     <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">Top Earners</h3>
+    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Your highest-paying holdings (EUR)</p>
     <div v-if="topFive.length === 0" class="mt-3 text-sm text-slate-500 dark:text-slate-400">
       No holdings found.
     </div>

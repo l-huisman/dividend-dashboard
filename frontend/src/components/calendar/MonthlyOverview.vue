@@ -1,6 +1,7 @@
 <template>
   <div class="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
     <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">Monthly Breakdown</h3>
+    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Which stocks pay dividends in each month and your estimated income</p>
     <div class="mt-3 space-y-2">
       <div v-for="m in monthlyIncome" :key="m.month" class="flex items-center gap-3">
         <span class="w-8 text-xs font-medium text-slate-500 dark:text-slate-400">{{ m.month }}</span>

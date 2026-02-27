@@ -1,6 +1,7 @@
 <template>
   <div class="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
     <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">Best Buy Windows</h3>
+    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Buy before these dates to capture upcoming dividends</p>
     <div v-if="windows.length === 0" class="mt-3 text-sm text-slate-500 dark:text-slate-400">
       No upcoming windows.
     </div>
@@ -33,6 +34,12 @@
           </span>
         </div>
       </div>
+      <p class="mt-3 text-[11px] leading-relaxed text-slate-400 dark:text-slate-500">
+        <span class="font-semibold">T+1 settlement:</span> You must buy at least 1 business day before
+        the ex-dividend date. Buying on or after the ex-date means the dividend goes to the seller.
+        Buy-by dates account for weekends. Windows are grouped within 7 days and ranked by total
+        capturable income.
+      </p>
     </div>
   </div>
 </template>

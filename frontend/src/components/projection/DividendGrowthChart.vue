@@ -1,6 +1,9 @@
 <template>
   <div class="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
     <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">Dividend Growth</h3>
+    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+      Annual dividends with {{ divGrowth.toFixed(1) }}% dividend growth
+    </p>
     <div class="mt-3" style="height: 300px">
       <Bar :data="chartData" :options="chartOptions" />
     </div>
@@ -28,6 +31,10 @@ const props = defineProps({
   data: {
     type: Array,
     required: true,
+  },
+  divGrowth: {
+    type: Number,
+    default: 0,
   },
 })
 

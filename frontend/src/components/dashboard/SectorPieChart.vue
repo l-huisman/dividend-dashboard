@@ -1,6 +1,7 @@
 <template>
   <div class="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
     <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">Sector Allocation</h3>
+    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Portfolio value distribution (EUR)</p>
     <div class="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2">
       <div>
         <p class="mb-2 text-xs font-medium text-slate-500 dark:text-slate-400">By Value</p>
