@@ -1,0 +1,26 @@
+{
+    "require": {
+        "php": "^8.4",
+        "bramus/router": "^1.6",
+        "firebase/php-jwt": "^6.10"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.18",
+        "phpstan/phpstan": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Controllers\\": "controllers",
+            "Services\\": "services",
+            "Models\\": "models",
+            "Repositories\\": "repositories",
+            "Middleware\\": "middleware"
+        }
+    },
+    "scripts": {
+        "pint": "pint",
+        "pint:fix": "pint --repair",
+        "stan": "phpstan analyse --level=6",
+        "check": ["@pint", "@stan"]
+    }
+}
