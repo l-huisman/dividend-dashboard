@@ -60,6 +60,21 @@ class StockController extends Controller
         $this->respond($stock);
     }
 
+    public function lookup(string $ticker): void
+    {
+        AuthMiddleware::requireAuth();
+
+        $yahoo = new \Services\YahooFinanceService();
+        $quote = $yahoo->fetchQuote(strtoupper($ticker));
+
+        if ($quote === null) {
+            $this->respondWithError(404, 'Ticker not found on Yahoo Finance');
+            return;
+        }
+
+        $this->respond($quote);
+    }
+
     public function create(): void
     {
         AuthMiddleware::requireAdmin();

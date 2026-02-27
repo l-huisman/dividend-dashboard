@@ -70,7 +70,18 @@
 
       <!-- New stock fields (only when creating) -->
       <div v-if="creatingNew" class="space-y-3 rounded-lg border border-blue-200 bg-blue-50/50 p-4 dark:border-blue-800 dark:bg-blue-900/10">
-        <p class="text-xs font-medium text-blue-700 dark:text-blue-400">New stock details</p>
+        <div class="flex items-center justify-between">
+          <p class="text-xs font-medium text-blue-700 dark:text-blue-400">New stock details</p>
+          <span v-if="lookingUp" class="text-xs text-blue-500 dark:text-blue-400">
+            Fetching from Yahoo Finance...
+          </span>
+          <span v-else-if="lookupDone && !lookupFailed" class="text-xs text-emerald-600 dark:text-emerald-400">
+            ✓ Auto-filled from Yahoo Finance
+          </span>
+          <span v-else-if="lookupFailed" class="text-xs text-amber-600 dark:text-amber-400">
+            Ticker not found — fill in manually
+          </span>
+        </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Ticker</label>
@@ -201,6 +212,9 @@ const searchQuery = ref('')
 const dropdownOpen = ref(false)
 const selectedStock = ref(null)
 const creatingNew = ref(false)
+const lookingUp = ref(false)
+const lookupDone = ref(false)
+const lookupFailed = ref(false)
 const comboWrapper = ref(null)
 
 const sectors = [
@@ -238,27 +252,50 @@ function selectStock(s) {
   creatingNew.value = false
 }
 
-function startCreating() {
+async function startCreating() {
   creatingNew.value = true
   selectedStock.value = null
-  newStock.ticker = searchQuery.value.toUpperCase()
+  lookupDone.value = false
+  lookupFailed.value = false
+
+  const ticker = searchQuery.value.toUpperCase()
+  newStock.ticker = ticker
   newStock.name = ''
   newStock.price = null
   newStock.dividend_per_share = null
   newStock.sector = ''
   dropdownOpen.value = false
+
+  // Auto-fetch from Yahoo Finance
+  lookingUp.value = true
+  try {
+    const { data } = await api.get(`/stocks/lookup/${encodeURIComponent(ticker)}`)
+    newStock.name = data.name || ''
+    newStock.price = data.price || null
+    newStock.dividend_per_share = data.dividend_per_share || null
+    newStock.sector = data.sector || ''
+    lookupDone.value = true
+  } catch {
+    lookupFailed.value = true
+  } finally {
+    lookingUp.value = false
+  }
 }
 
 function clearSelection() {
   selectedStock.value = null
   searchQuery.value = ''
   creatingNew.value = false
+  lookupDone.value = false
+  lookupFailed.value = false
 }
 
 function resetForm() {
   selectedStock.value = null
   searchQuery.value = ''
   creatingNew.value = false
+  lookupDone.value = false
+  lookupFailed.value = false
   Object.assign(newStock, { ticker: '', name: '', price: null, dividend_per_share: null, sector: '' })
   Object.assign(form, { shares: null, invested: null, bought_on: '' })
 }

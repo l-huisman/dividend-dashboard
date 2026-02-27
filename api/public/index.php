@@ -27,7 +27,8 @@ $router->post('/register', 'AuthController@register');
 // Stocks (authenticated)
 $router->get('/stocks', 'StockController@getAll');
 $router->get('/stocks/(\d+)', 'StockController@getOne');
-$router->post('/stocks/refresh/([A-Za-z]+)', 'StockController@refresh');
+$router->get('/stocks/lookup/([A-Za-z.]+)', 'StockController@lookup');
+$router->post('/stocks/refresh/([A-Za-z.]+)', 'StockController@refresh');
 $router->post('/stocks', 'StockController@create');
 $router->put('/stocks/(\d+)', 'StockController@update');
 $router->delete('/stocks/(\d+)', 'StockController@delete');
