@@ -198,7 +198,7 @@ class StockRepository extends Repository
         $months = [];
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $months[] = (int) $row['month'];
+            $months[] = (int) $row['month'] - 1;
         }
 
         return $months;
@@ -219,7 +219,7 @@ class StockRepository extends Repository
         foreach ($months as $month) {
             $stmt->execute([
                 'stock_id' => $stockId,
-                'month' => (int) $month,
+                'month' => (int) $month + 1,
             ]);
         }
     }
