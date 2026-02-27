@@ -30,7 +30,7 @@
       <!-- Scrollable chart container -->
       <div
         ref="scrollEl"
-        class="overflow-x-auto overflow-y-hidden pl-16"
+        class="scrollbar-dark overflow-x-auto overflow-y-hidden pl-16"
         style="scrollbar-width: thin; -webkit-overflow-scrolling: touch"
         @scroll="handleScroll"
       >
