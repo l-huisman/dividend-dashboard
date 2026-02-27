@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import api from '../api/axios'
 import router from '../router'
+import { usePortfolioStore } from './portfolio'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -16,6 +17,7 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     async login(email, password) {
+      usePortfolioStore().clearData()
       const { data } = await api.post('/login', { email, password })
       this.token = data.token
       this.user = data.user
@@ -24,6 +26,7 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async register(username, email, password) {
+      usePortfolioStore().clearData()
       const { data } = await api.post('/register', { username, email, password })
       this.token = data.token
       this.user = data.user
@@ -36,6 +39,7 @@ export const useAuthStore = defineStore('auth', {
       this.user = null
       localStorage.removeItem('token')
       localStorage.removeItem('user')
+      usePortfolioStore().clearData()
       router.push('/login')
     },
   },

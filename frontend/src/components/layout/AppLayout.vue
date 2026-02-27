@@ -13,8 +13,10 @@
 </template>
 
 <script setup>
-import { inject, ref } from 'vue'
+import { provide } from 'vue'
 import SideBar from './SideBar.vue'
+import { useSidebar } from '../../composables/useSidebar'
 
-const sidebarExpanded = inject('sidebarExpanded', ref(false))
+const { expanded: sidebarExpanded } = useSidebar()
+provide('sidebarExpanded', sidebarExpanded)
 </script>

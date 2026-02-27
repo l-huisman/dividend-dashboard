@@ -77,37 +77,50 @@
 
     <!-- Bottom section -->
     <div class="border-t border-slate-200 px-2 py-3 dark:border-slate-700">
-      <button
-        @click="toggle"
-        :title="isDark ? 'Light mode' : 'Dark mode'"
-        :class="[
-          'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700',
-          expanded ? '' : 'justify-center',
-        ]"
-      >
-        <MoonIcon v-if="!isDark" class="h-5 w-5 shrink-0" />
-        <SunIcon v-else class="h-5 w-5 shrink-0" />
-        <span v-if="expanded" class="truncate">{{ isDark ? 'Light mode' : 'Dark mode' }}</span>
-      </button>
+      <!-- User dropdown -->
+      <div class="relative">
+        <button
+          @click="userMenuOpen = !userMenuOpen"
+          :title="auth.user?.username || 'Account'"
+          :class="[
+            'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700',
+            expanded ? '' : 'justify-center',
+          ]"
+        >
+          <UserCircleIcon class="h-5 w-5 shrink-0" />
+          <span v-if="expanded" class="truncate">{{ auth.user?.username || 'Account' }}</span>
+          <ChevronUpIcon
+            v-if="expanded"
+            class="ml-auto h-4 w-4 shrink-0 transition-transform duration-200"
+            :class="userMenuOpen ? '' : 'rotate-180'"
+          />
+        </button>
 
-      <div
-        v-if="expanded && auth.user"
-        class="mt-1 truncate px-3 py-1 text-xs text-slate-400 dark:text-slate-500"
-      >
-        {{ auth.user.username }}
+        <!-- Dropdown menu -->
+        <div
+          v-if="userMenuOpen"
+          :class="[
+            'absolute z-50 mb-1 rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-600 dark:bg-slate-700',
+            expanded ? 'bottom-full left-0 right-0' : 'bottom-0 left-full ml-2 w-44',
+          ]"
+        >
+          <button
+            @click="toggle(); userMenuOpen = false"
+            class="flex w-full items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-600"
+          >
+            <MoonIcon v-if="!isDark" class="h-4 w-4 shrink-0" />
+            <SunIcon v-else class="h-4 w-4 shrink-0" />
+            <span>{{ isDark ? 'Light mode' : 'Dark mode' }}</span>
+          </button>
+          <button
+            @click="auth.logout()"
+            class="flex w-full items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-600"
+          >
+            <ArrowRightOnRectangleIcon class="h-4 w-4 shrink-0" />
+            <span>Sign out</span>
+          </button>
+        </div>
       </div>
-
-      <button
-        @click="auth.logout()"
-        title="Sign out"
-        :class="[
-          'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700',
-          expanded ? '' : 'justify-center',
-        ]"
-      >
-        <ArrowRightOnRectangleIcon class="h-5 w-5 shrink-0" />
-        <span v-if="expanded" class="truncate">Sign out</span>
-      </button>
 
       <button
         @click="expanded = !expanded"
@@ -128,7 +141,7 @@
 </template>
 
 <script setup>
-import { ref, provide } from 'vue'
+import { ref, inject, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import { useTheme } from '../../composables/useTheme'
@@ -144,16 +157,26 @@ import {
   Bars3Icon,
   ArrowRightOnRectangleIcon,
   ChevronDoubleRightIcon,
+  UserCircleIcon,
+  ChevronUpIcon,
 } from '@heroicons/vue/24/outline'
 
 const auth = useAuthStore()
 const route = useRoute()
 const { isDark, toggle } = useTheme()
 
-const expanded = ref(false)
+const expanded = inject('sidebarExpanded', ref(false))
 const mobileOpen = ref(false)
+const userMenuOpen = ref(false)
 
-provide('sidebarExpanded', expanded)
+function closeUserMenu(e) {
+  if (userMenuOpen.value && !e.target.closest('.relative')) {
+    userMenuOpen.value = false
+  }
+}
+
+onMounted(() => document.addEventListener('click', closeUserMenu))
+onUnmounted(() => document.removeEventListener('click', closeUserMenu))
 
 const userLinks = [
   { to: '/', label: 'Dashboard', icon: HomeIcon },
