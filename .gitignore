@@ -1,0 +1,19 @@
+# PHP
+api/vendor/
+api/.phpstan-cache/
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Docker
+mysqldata/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Environment
+.env
