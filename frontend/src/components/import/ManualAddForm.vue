@@ -262,7 +262,7 @@ const stockPrice = computed(() => {
 // Auto-calculate invested = shares × price when shares changes
 watch(() => form.shares, (shares) => {
   if (shares > 0 && stockPrice.value > 0) {
-    form.invested = Math.round(shares * stockPrice.value * 100) / 100
+    form.invested = +(shares * stockPrice.value).toFixed(4)
   }
 })
 
