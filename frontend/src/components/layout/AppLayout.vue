@@ -2,7 +2,8 @@
   <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
     <SideBar />
     <main
-      class="min-h-screen px-4 py-6 pt-16 transition-all duration-300 sm:px-6 lg:ml-16 lg:px-8 lg:pt-6"
+      class="min-h-screen px-4 py-6 pt-16 transition-all duration-300 sm:px-6 lg:px-8 lg:pt-6"
+      :class="sidebarExpanded ? 'lg:ml-56' : 'lg:ml-16'"
     >
       <div class="mx-auto max-w-7xl">
         <slot />
@@ -12,5 +13,8 @@
 </template>
 
 <script setup>
+import { inject, ref } from 'vue'
 import SideBar from './SideBar.vue'
+
+const sidebarExpanded = inject('sidebarExpanded', ref(false))
 </script>

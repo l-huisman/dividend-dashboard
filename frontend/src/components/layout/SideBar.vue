@@ -128,7 +128,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, provide } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import { useTheme } from '../../composables/useTheme'
@@ -152,6 +152,8 @@ const { isDark, toggle } = useTheme()
 
 const expanded = ref(false)
 const mobileOpen = ref(false)
+
+provide('sidebarExpanded', expanded)
 
 const userLinks = [
   { to: '/', label: 'Dashboard', icon: HomeIcon },
