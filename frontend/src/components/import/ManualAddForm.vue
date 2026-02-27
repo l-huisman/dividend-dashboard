@@ -150,7 +150,12 @@
           />
         </div>
         <div>
-          <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Invested (USD)</label>
+          <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">
+            Invested (USD)
+            <span v-if="stockPrice > 0" class="font-normal text-slate-400 dark:text-slate-500">
+              · {{ stockPrice.toFixed(2) }}/share
+            </span>
+          </label>
           <input
             type="number"
             v-model.number="form.invested"
@@ -196,7 +201,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue'
 import api from '../../api/axios'
 import { usePortfolioStore } from '../../stores/portfolio'
 import { useStockStore } from '../../stores/stocks'
@@ -231,10 +236,12 @@ const newStock = reactive({
   sector: '',
 })
 
+const today = new Date().toISOString().slice(0, 10)
+
 const form = reactive({
   shares: null,
   invested: null,
-  bought_on: '',
+  bought_on: today,
 })
 
 const filteredStocks = computed(() => {
@@ -243,6 +250,20 @@ const filteredStocks = computed(() => {
   return stocks.stocks.filter(
     (s) => s.ticker.toLowerCase().includes(q) || s.name.toLowerCase().includes(q),
   ).slice(0, 8)
+})
+
+// Resolve current stock price from either selected stock or new stock form
+const stockPrice = computed(() => {
+  if (selectedStock.value) return selectedStock.value.price || 0
+  if (creatingNew.value) return newStock.price || 0
+  return 0
+})
+
+// Auto-calculate invested = shares × price when shares changes
+watch(() => form.shares, (shares) => {
+  if (shares > 0 && stockPrice.value > 0) {
+    form.invested = Math.round(shares * stockPrice.value * 100) / 100
+  }
 })
 
 function selectStock(s) {
@@ -297,7 +318,7 @@ function resetForm() {
   lookupDone.value = false
   lookupFailed.value = false
   Object.assign(newStock, { ticker: '', name: '', price: null, dividend_per_share: null, sector: '' })
-  Object.assign(form, { shares: null, invested: null, bought_on: '' })
+  Object.assign(form, { shares: null, invested: null, bought_on: new Date().toISOString().slice(0, 10) })
 }
 
 async function handleSubmit() {
