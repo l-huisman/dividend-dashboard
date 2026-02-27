@@ -2,7 +2,7 @@
   <div class="flex min-h-screen items-center justify-center bg-slate-50 px-4 dark:bg-slate-900">
     <div class="w-full max-w-sm">
       <h1 class="mb-8 text-center text-2xl font-bold text-slate-800 dark:text-slate-100">
-        Dividend Dashboard
+        DividendFlow
       </h1>
 
       <div class="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">

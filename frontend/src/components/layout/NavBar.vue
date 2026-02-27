@@ -4,7 +4,7 @@
       <div class="flex h-14 items-center justify-between">
         <!-- Brand -->
         <router-link to="/" class="text-lg font-semibold text-slate-800 dark:text-slate-100">
-          Dividend Dashboard
+          DividendFlow
         </router-link>
 
         <!-- Desktop nav links -->

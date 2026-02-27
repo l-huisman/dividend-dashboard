@@ -65,8 +65,8 @@ CREATE TABLE `stock_payment_months` (
 -- =====================================================
 
 INSERT INTO `users` (`id`, `username`, `email`, `password_hash`, `role`) VALUES
-(1, 'admin', 'admin@{appname}.nl', '$2y$12$9RG45Hq043AqMkHARCYQUO0KbPm10IunaoNYouDzoR423NmAY3yDq', 1),
-(2, 'user', 'user@{appname}.nl', '$2y$12$9RG45Hq043AqMkHARCYQUO0KbPm10IunaoNYouDzoR423NmAY3yDq', 0);
+(1, 'admin', 'admin@dividendflow.nl', '$2y$12$9RG45Hq043AqMkHARCYQUO0KbPm10IunaoNYouDzoR423NmAY3yDq', 1),
+(2, 'user', 'user@dividendflow.nl', '$2y$12$9RG45Hq043AqMkHARCYQUO0KbPm10IunaoNYouDzoR423NmAY3yDq', 0);
 
 -- =====================================================
 -- Seed data: stocks (50 stocks)
