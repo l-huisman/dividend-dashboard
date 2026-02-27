@@ -9,7 +9,7 @@
       />
     </div>
 
-    <div class="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+    <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
       <table class="w-full text-sm">
         <thead>
           <tr class="border-b border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50">

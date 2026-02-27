@@ -7,7 +7,7 @@
       <ErrorAlert :message="error" />
     </div>
     <div v-else>
-      <div class="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+      <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50">
@@ -21,8 +21,8 @@
           <tbody>
             <tr v-for="u in users" :key="u.id"
               class="border-b border-slate-100 last:border-0 dark:border-slate-700/50">
-              <td class="px-4 py-3 text-slate-800 dark:text-slate-100">{{ u.username }}</td>
-              <td class="px-4 py-3 text-slate-500 dark:text-slate-400">{{ u.email }}</td>
+              <td class="max-w-[150px] truncate px-4 py-3 text-slate-800 dark:text-slate-100">{{ u.username }}</td>
+              <td class="max-w-[200px] truncate px-4 py-3 text-slate-500 dark:text-slate-400">{{ u.email }}</td>
               <td class="px-4 py-3">
                 <span class="rounded-full px-2 py-0.5 text-xs font-medium"
                   :class="u.role === 1

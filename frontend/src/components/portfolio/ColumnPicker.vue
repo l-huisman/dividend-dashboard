@@ -21,7 +21,7 @@
           type="checkbox"
           :checked="modelValue.includes(col.key)"
           @change="toggleColumn(col.key)"
-          class="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:border-slate-600"
+          class="h-3.5 w-3.5 rounded border-slate-300 bg-white text-blue-600 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-600"
         />
         {{ col.label }}
       </label>

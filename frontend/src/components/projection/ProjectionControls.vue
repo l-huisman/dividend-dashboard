@@ -1,6 +1,6 @@
 <template>
   <div class="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
-    <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <div>
         <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Monthly (EUR)</label>
         <input

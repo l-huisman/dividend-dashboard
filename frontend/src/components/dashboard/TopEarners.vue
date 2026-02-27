@@ -10,13 +10,13 @@
         :key="item.stock?.ticker"
         class="flex items-center justify-between"
       >
-        <div>
+        <div class="min-w-0 flex-1">
           <p class="text-sm font-medium text-slate-800 dark:text-slate-100">
             {{ item.stock?.ticker }}
           </p>
-          <p class="text-xs text-slate-500 dark:text-slate-400">{{ item.stock?.name }}</p>
+          <p class="truncate text-xs text-slate-500 dark:text-slate-400">{{ item.stock?.name }}</p>
         </div>
-        <p class="text-sm font-medium tabular-nums text-emerald-500 dark:text-emerald-400">
+        <p class="ml-4 shrink-0 text-sm font-medium tabular-nums text-emerald-500 dark:text-emerald-400">
           {{ formatEur(item.annualDividend) }}
         </p>
       </div>
