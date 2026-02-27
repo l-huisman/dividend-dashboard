@@ -1,21 +1,131 @@
 <template>
   <div class="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
     <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">Add Holding Manually</h3>
+    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+      Select an existing stock or type to create a new one
+    </p>
 
     <form @submit.prevent="handleSubmit" class="mt-4 space-y-4">
-      <div>
+      <!-- Stock search / select -->
+      <div class="relative" ref="comboWrapper">
         <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Stock</label>
-        <select
-          v-model="form.stock_id"
+        <input
+          v-model="searchQuery"
+          @focus="dropdownOpen = true"
+          @input="dropdownOpen = true"
+          type="text"
+          placeholder="Search or type a new ticker..."
+          autocomplete="off"
           class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+        />
+
+        <!-- Selected stock badge -->
+        <div
+          v-if="selectedStock && !dropdownOpen"
+          class="mt-1 flex items-center gap-2"
         >
-          <option value="">Select a stock...</option>
-          <option v-for="s in stocks.stocks" :key="s.id" :value="s.id">
-            {{ s.ticker }} - {{ s.name }}
-          </option>
-        </select>
+          <span class="rounded bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+            {{ selectedStock.ticker }}
+          </span>
+          <span class="text-xs text-slate-500 dark:text-slate-400">{{ selectedStock.name }}</span>
+          <button
+            type="button"
+            @click="clearSelection"
+            class="text-xs text-slate-400 hover:text-red-500"
+          >
+            &#x2715;
+          </button>
+        </div>
+
+        <!-- Dropdown -->
+        <div
+          v-if="dropdownOpen && searchQuery.length > 0"
+          class="absolute z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-600 dark:bg-slate-700"
+        >
+          <button
+            v-for="s in filteredStocks"
+            :key="s.id"
+            type="button"
+            @click="selectStock(s)"
+            class="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-600"
+          >
+            <div>
+              <span class="font-medium text-slate-800 dark:text-slate-100">{{ s.ticker }}</span>
+              <span class="ml-2 text-slate-500 dark:text-slate-400">{{ s.name }}</span>
+            </div>
+            <span class="text-xs text-slate-400 dark:text-slate-500">{{ s.sector }}</span>
+          </button>
+
+          <!-- Create new option -->
+          <button
+            type="button"
+            @click="startCreating"
+            class="flex w-full items-center gap-2 border-t border-slate-100 px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 dark:border-slate-600 dark:text-blue-400 dark:hover:bg-slate-600"
+          >
+            <span class="text-lg leading-none">+</span>
+            <span>Add new stock "{{ searchQuery.toUpperCase() }}"</span>
+          </button>
+        </div>
       </div>
 
+      <!-- New stock fields (only when creating) -->
+      <div v-if="creatingNew" class="space-y-3 rounded-lg border border-blue-200 bg-blue-50/50 p-4 dark:border-blue-800 dark:bg-blue-900/10">
+        <p class="text-xs font-medium text-blue-700 dark:text-blue-400">New stock details</p>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Ticker</label>
+            <input
+              v-model="newStock.ticker"
+              type="text"
+              required
+              class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm uppercase text-slate-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+            />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Name</label>
+            <input
+              v-model="newStock.name"
+              type="text"
+              required
+              class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+            />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Price (USD)</label>
+            <input
+              v-model.number="newStock.price"
+              type="number"
+              step="0.01"
+              min="0"
+              required
+              class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm tabular-nums text-slate-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+            />
+          </div>
+          <div>
+            <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Annual Dividend (USD)</label>
+            <input
+              v-model.number="newStock.dividend_per_share"
+              type="number"
+              step="0.01"
+              min="0"
+              required
+              class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm tabular-nums text-slate-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+            />
+          </div>
+        </div>
+        <div>
+          <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Sector</label>
+          <select
+            v-model="newStock.sector"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+          >
+            <option value="">Select sector...</option>
+            <option v-for="sec in sectors" :key="sec" :value="sec">{{ sec }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Holding fields -->
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Shares</label>
@@ -52,7 +162,7 @@
 
       <button
         type="submit"
-        :disabled="submitting || !form.stock_id"
+        :disabled="submitting || (!selectedStock && !creatingNew)"
         class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 dark:bg-blue-500 dark:hover:bg-blue-600"
       >
         {{ submitting ? 'Adding...' : 'Add Holding' }}
@@ -75,7 +185,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import api from '../../api/axios'
 import { usePortfolioStore } from '../../stores/portfolio'
 import { useStockStore } from '../../stores/stocks'
 
@@ -86,33 +197,105 @@ const submitting = ref(false)
 const success = ref('')
 const error = ref('')
 
-const initialForm = {
-  stock_id: '',
+const searchQuery = ref('')
+const dropdownOpen = ref(false)
+const selectedStock = ref(null)
+const creatingNew = ref(false)
+const comboWrapper = ref(null)
+
+const sectors = [
+  'Technology', 'Real Estate', 'Healthcare', 'Energy',
+  'Consumer Defensive', 'Consumer Cyclical', 'Financial Services',
+  'Industrials', 'Basic Materials', 'Utilities',
+]
+
+const newStock = reactive({
+  ticker: '',
+  name: '',
+  price: null,
+  dividend_per_share: null,
+  sector: '',
+})
+
+const form = reactive({
   shares: null,
   invested: null,
   bought_on: '',
+})
+
+const filteredStocks = computed(() => {
+  const q = searchQuery.value.toLowerCase().trim()
+  if (!q) return []
+  return stocks.stocks.filter(
+    (s) => s.ticker.toLowerCase().includes(q) || s.name.toLowerCase().includes(q),
+  ).slice(0, 8)
+})
+
+function selectStock(s) {
+  selectedStock.value = s
+  searchQuery.value = s.ticker
+  dropdownOpen.value = false
+  creatingNew.value = false
 }
 
-const form = reactive({ ...initialForm })
+function startCreating() {
+  creatingNew.value = true
+  selectedStock.value = null
+  newStock.ticker = searchQuery.value.toUpperCase()
+  newStock.name = ''
+  newStock.price = null
+  newStock.dividend_per_share = null
+  newStock.sector = ''
+  dropdownOpen.value = false
+}
+
+function clearSelection() {
+  selectedStock.value = null
+  searchQuery.value = ''
+  creatingNew.value = false
+}
 
 function resetForm() {
-  Object.assign(form, { ...initialForm })
+  selectedStock.value = null
+  searchQuery.value = ''
+  creatingNew.value = false
+  Object.assign(newStock, { ticker: '', name: '', price: null, dividend_per_share: null, sector: '' })
+  Object.assign(form, { shares: null, invested: null, bought_on: '' })
 }
 
 async function handleSubmit() {
-  if (!form.stock_id) return
-
   submitting.value = true
   success.value = ''
   error.value = ''
 
   try {
+    let stockId
+
+    if (creatingNew.value) {
+      const { data: created } = await api.post('/stocks', {
+        ticker: newStock.ticker,
+        name: newStock.name,
+        price: newStock.price,
+        dividend_per_share: newStock.dividend_per_share,
+        sector: newStock.sector,
+      })
+      stockId = created.id
+      await stocks.fetchStocks()
+    } else if (selectedStock.value) {
+      stockId = selectedStock.value.id
+    } else {
+      error.value = 'Please select or create a stock.'
+      submitting.value = false
+      return
+    }
+
     await portfolio.createHolding({
-      stock_id: form.stock_id,
+      stock_id: stockId,
       shares: form.shares,
       invested: form.invested,
       bought_on: form.bought_on || undefined,
     })
+
     success.value = 'Holding added successfully.'
     resetForm()
   } catch (e) {
@@ -122,9 +305,20 @@ async function handleSubmit() {
   }
 }
 
+function handleClickOutside(e) {
+  if (comboWrapper.value && !comboWrapper.value.contains(e.target)) {
+    dropdownOpen.value = false
+  }
+}
+
 onMounted(() => {
   if (stocks.stocks.length === 0) {
     stocks.fetchStocks()
   }
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
