@@ -7,7 +7,6 @@ namespace Services;
 class YahooFinanceService
 {
     private const CHART_URL = 'https://query1.finance.yahoo.com/v8/finance/chart/';
-    private const SUMMARY_URL = 'https://query1.finance.yahoo.com/v10/finance/quoteSummary/';
 
     /**
      * @return array{price: float, dividend_per_share: float, dividend_yield: float, sector: string, ex_dividend_date: string|null, name: string}|null
@@ -21,8 +20,8 @@ class YahooFinanceService
             ],
         ]);
 
-        // Fetch chart data for price
-        $chartUrl = self::CHART_URL . urlencode($ticker) . '?interval=1d&range=5d';
+        // Fetch chart data with 2 years of dividend events
+        $chartUrl = self::CHART_URL . urlencode($ticker) . '?interval=1mo&range=2y&events=div';
         $chartJson = @file_get_contents($chartUrl, false, $context);
 
         if ($chartJson === false) {
@@ -39,36 +38,37 @@ class YahooFinanceService
         $meta = $result['meta'] ?? [];
         $price = (float) ($meta['regularMarketPrice'] ?? 0);
 
-        // Fetch summary data for dividends and sector
-        $summaryUrl = self::SUMMARY_URL . urlencode($ticker) . '?modules=summaryDetail,assetProfile';
-        $summaryJson = @file_get_contents($summaryUrl, false, $context);
-
+        // Calculate annual dividend from dividend events in the last ~13 months
+        $dividends = $result['events']['dividends'] ?? [];
         $dividendPerShare = 0.0;
-        $dividendYield = 0.0;
-        $sector = '';
         $exDividendDate = null;
 
-        if ($summaryJson !== false) {
-            $summaryData = json_decode($summaryJson, true);
-            $summary = $summaryData['quoteSummary']['result'][0] ?? [];
+        if (!empty($dividends)) {
+            $oneYearAgo = time() - (13 * 30 * 86400);
+            $recentDividends = [];
 
-            $detail = $summary['summaryDetail'] ?? [];
-            $dividendPerShare = (float) ($detail['dividendRate']['raw'] ?? 0);
-            $dividendYield = (float) ($detail['dividendYield']['raw'] ?? 0);
-
-            if (isset($detail['exDividendDate']['fmt'])) {
-                $exDividendDate = $detail['exDividendDate']['fmt'];
+            foreach ($dividends as $div) {
+                if ((int) $div['date'] >= $oneYearAgo) {
+                    $recentDividends[] = $div;
+                }
             }
 
-            $profile = $summary['assetProfile'] ?? [];
-            $sector = $profile['sector'] ?? '';
+            if (!empty($recentDividends)) {
+                $dividendPerShare = array_sum(array_column($recentDividends, 'amount'));
+
+                // Most recent dividend date as ex-dividend date
+                usort($recentDividends, fn($a, $b) => $b['date'] <=> $a['date']);
+                $exDividendDate = date('Y-m-d', (int) $recentDividends[0]['date']);
+            }
         }
+
+        $dividendYield = $price > 0 ? $dividendPerShare / $price : 0.0;
 
         return [
             'price' => $price,
-            'dividend_per_share' => $dividendPerShare,
-            'dividend_yield' => $dividendYield,
-            'sector' => $sector,
+            'dividend_per_share' => round($dividendPerShare, 4),
+            'dividend_yield' => round($dividendYield, 6),
+            'sector' => '',
             'ex_dividend_date' => $exDividendDate,
             'name' => $meta['shortName'] ?? $meta['symbol'] ?? $ticker,
         ];
