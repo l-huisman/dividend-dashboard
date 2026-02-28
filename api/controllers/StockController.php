@@ -148,13 +148,21 @@ class StockController extends Controller
     {
         AuthMiddleware::requireAdmin();
 
-        $deleted = $this->service->delete((int) $id);
+        try {
+            $deleted = $this->service->delete((int) $id);
 
-        if (!$deleted) {
-            $this->respondWithError(404, 'Stock not found');
-            return;
+            if (!$deleted) {
+                $this->respondWithError(404, 'Stock not found');
+                return;
+            }
+
+            $this->respond(['message' => 'Stock deleted']);
+        } catch (\PDOException $e) {
+            if ($e->getCode() === '23000' || str_contains($e->getMessage(), 'constraint')) {
+                $this->respondWithError(409, 'Cannot delete stock that has holdings or transactions');
+                return;
+            }
+            throw $e;
         }
-
-        $this->respond(['message' => 'Stock deleted']);
     }
 }

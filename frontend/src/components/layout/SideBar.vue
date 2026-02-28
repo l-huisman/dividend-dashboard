@@ -58,19 +58,21 @@
       </template>
       <template v-if="auth.isAdmin">
         <router-link
-          to="/admin"
+          v-for="link in adminLinks"
+          :key="link.to"
+          :to="link.to"
           @click="mobileOpen = false"
-          title="Users"
+          :title="link.label"
           :class="[
             'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-            isActive('/admin')
+            isActive(link.to)
               ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
               : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700',
             expanded ? '' : 'justify-center',
           ]"
         >
-          <UsersIcon class="h-5 w-5 shrink-0" />
-          <span v-if="expanded" class="truncate">Users</span>
+          <component :is="link.icon" class="h-5 w-5 shrink-0" />
+          <span v-if="expanded" class="truncate">{{ link.label }}</span>
         </router-link>
       </template>
     </nav>
@@ -152,6 +154,7 @@ import {
   CalendarIcon,
   ArrowUpTrayIcon,
   UsersIcon,
+  CurrencyDollarIcon,
   SunIcon,
   MoonIcon,
   Bars3Icon,
@@ -184,6 +187,12 @@ const userLinks = [
   { to: '/projection', label: 'Projection', icon: ArrowTrendingUpIcon },
   { to: '/calendar', label: 'Calendar', icon: CalendarIcon },
   { to: '/import', label: 'Import', icon: ArrowUpTrayIcon },
+]
+
+const adminLinks = [
+  { to: '/admin/overview', label: 'Overview', icon: HomeIcon },
+  { to: '/admin/users', label: 'Users', icon: UsersIcon },
+  { to: '/admin/stocks', label: 'Stocks', icon: CurrencyDollarIcon },
 ]
 
 function isActive(to) {

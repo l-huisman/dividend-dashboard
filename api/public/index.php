@@ -45,10 +45,16 @@ $router->post('/holdings/import', 'HoldingController@import');
 // Transactions (authenticated, own user)
 $router->get('/transactions', 'TransactionController@getAll');
 
+// Admin (admin only)
+$router->get('/admin/stats', 'AdminController@stats');
+
 // Users (admin only)
 $router->get('/users', 'UserController@getAll');
 $router->put('/users/(\d+)', 'UserController@update');
 $router->delete('/users/(\d+)', 'UserController@delete');
+$router->put('/users/(\d+)/password', 'UserController@resetPassword');
+$router->post('/users/bulk-role', 'UserController@bulkUpdateRole');
+$router->post('/users/bulk-delete', 'UserController@bulkDelete');
 
 // Portfolio (authenticated, computed)
 $router->get('/portfolio/summary', 'PortfolioController@summary');

@@ -56,13 +56,31 @@ class UserRepository extends Repository
     /**
      * @return User[]
      */
-    public function getAll(int $page, int $limit): array
+    public function getAll(int $page, int $limit, ?string $search = null, ?int $role = null): array
     {
         $offset = ($page - 1) * $limit;
 
-        $stmt = $this->connection->prepare(
-            'SELECT id, username, email, role, created_at, updated_at FROM users ORDER BY id ASC LIMIT :limit OFFSET :offset'
-        );
+        $sql = 'SELECT id, username, email, role, created_at, updated_at FROM users WHERE 1=1';
+        $params = [];
+
+        if ($search !== null) {
+            $sql .= ' AND (username LIKE :search OR email LIKE :search)';
+            $params['search'] = '%' . $search . '%';
+        }
+
+        if ($role !== null) {
+            $sql .= ' AND role = :role';
+            $params['role'] = $role;
+        }
+
+        $sql .= ' ORDER BY id ASC LIMIT :limit OFFSET :offset';
+
+        $stmt = $this->connection->prepare($sql);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+
         $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue('offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
@@ -82,11 +100,68 @@ class UserRepository extends Repository
         return $users;
     }
 
-    public function count(): int
+    public function count(?string $search = null, ?int $role = null): int
     {
-        $stmt = $this->connection->query('SELECT COUNT(*) FROM users');
+        $sql = 'SELECT COUNT(*) FROM users WHERE 1=1';
+        $params = [];
+
+        if ($search !== null) {
+            $sql .= ' AND (username LIKE :search OR email LIKE :search)';
+            $params['search'] = '%' . $search . '%';
+        }
+
+        if ($role !== null) {
+            $sql .= ' AND role = :role';
+            $params['role'] = $role;
+        }
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute($params);
 
         return (int) $stmt->fetchColumn();
+    }
+
+    public function countByRole(int $role): int
+    {
+        $stmt = $this->connection->prepare('SELECT COUNT(*) FROM users WHERE role = :role');
+        $stmt->execute(['role' => $role]);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function updatePassword(int $id, string $hash): bool
+    {
+        $stmt = $this->connection->prepare('UPDATE users SET password_hash = :hash WHERE id = :id');
+        $stmt->execute(['hash' => $hash, 'id' => $id]);
+
+        return $stmt->rowCount() > 0;
+    }
+
+    public function bulkUpdateRole(array $ids, int $role): int
+    {
+        if (empty($ids)) {
+            return 0;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $this->connection->prepare("UPDATE users SET role = ? WHERE id IN ({$placeholders})");
+        $params = array_merge([$role], $ids);
+        $stmt->execute($params);
+
+        return $stmt->rowCount();
+    }
+
+    public function bulkDelete(array $ids): int
+    {
+        if (empty($ids)) {
+            return 0;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $this->connection->prepare("DELETE FROM users WHERE id IN ({$placeholders})");
+        $stmt->execute($ids);
+
+        return $stmt->rowCount();
     }
 
     public function update(int $id, int $role): ?User

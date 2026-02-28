@@ -45,9 +45,14 @@ const routes = [
   },
   {
     path: '/admin',
-    name: 'admin',
     component: () => import('../views/AdminView.vue'),
     meta: { requiresAuth: true, requiresAdmin: true },
+    children: [
+      { path: '', redirect: { name: 'admin-overview' } },
+      { path: 'overview', name: 'admin-overview', component: () => import('../components/admin/AdminOverview.vue') },
+      { path: 'users', name: 'admin-users', component: () => import('../components/admin/UserManagement.vue') },
+      { path: 'stocks', name: 'admin-stocks', component: () => import('../components/admin/StockManagement.vue') },
+    ],
   },
   {
     path: '/:pathMatch(.*)*',
@@ -79,7 +84,7 @@ router.beforeEach((to) => {
   }
 
   if (to.meta.requiresUser && isAdmin) {
-    return '/admin'
+    return '/admin/overview'
   }
 })
 

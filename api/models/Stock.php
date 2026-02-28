@@ -21,4 +21,5 @@ class Stock
     public string $updated_at = '';
     /** @var int[] */
     public array $payment_months = [];
+    public ?int $holders = null;
 }

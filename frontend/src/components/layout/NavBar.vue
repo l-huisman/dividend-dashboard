@@ -26,15 +26,17 @@
           </template>
           <template v-if="auth.isAdmin">
             <router-link
-              to="/admin"
+              v-for="link in adminLinks"
+              :key="link.to"
+              :to="link.to"
               :class="[
                 'rounded-lg px-3 py-2 text-sm font-medium',
-                isActive('/admin')
+                isActive(link.to)
                   ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
                   : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'
               ]"
             >
-              Users
+              {{ link.label }}
             </router-link>
           </template>
         </div>
@@ -96,16 +98,18 @@
         </template>
         <template v-if="auth.isAdmin">
           <router-link
-            to="/admin"
+            v-for="link in adminLinks"
+            :key="link.to"
+            :to="link.to"
             @click="menuOpen = false"
             :class="[
               'block rounded-lg px-3 py-2 text-sm font-medium',
-              isActive('/admin')
+              isActive(link.to)
                 ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
                 : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'
             ]"
           >
-            Users
+            {{ link.label }}
           </router-link>
         </template>
       </div>
@@ -138,6 +142,12 @@ const userLinks = [
   { to: '/projection', label: 'Projection' },
   { to: '/calendar', label: 'Calendar' },
   { to: '/import', label: 'Import' },
+]
+
+const adminLinks = [
+  { to: '/admin/overview', label: 'Overview' },
+  { to: '/admin/users', label: 'Users' },
+  { to: '/admin/stocks', label: 'Stocks' },
 ]
 
 function isActive(to) {

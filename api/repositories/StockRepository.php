@@ -22,20 +22,20 @@ class StockRepository extends Repository
 
         $direction = strtolower($direction) === 'desc' ? 'DESC' : 'ASC';
 
-        $sql = 'SELECT * FROM stocks WHERE 1=1';
+        $sql = 'SELECT s.*, (SELECT COUNT(DISTINCT h.user_id) FROM holdings h WHERE h.stock_id = s.id) AS holders FROM stocks s WHERE 1=1';
         $params = [];
 
         if ($search !== null) {
-            $sql .= ' AND (ticker LIKE :search OR name LIKE :search)';
+            $sql .= ' AND (s.ticker LIKE :search OR s.name LIKE :search)';
             $params['search'] = '%' . $search . '%';
         }
 
         if ($sector !== null) {
-            $sql .= ' AND sector = :sector';
+            $sql .= ' AND s.sector = :sector';
             $params['sector'] = $sector;
         }
 
-        $sql .= " ORDER BY {$sort} {$direction}";
+        $sql .= " ORDER BY s.{$sort} {$direction}";
         $sql .= ' LIMIT :limit OFFSET :offset';
 
         $offset = ($page - 1) * $limit;
@@ -160,8 +160,19 @@ class StockRepository extends Repository
 
     public function delete(int $id): void
     {
-        $stmt = $this->connection->prepare('DELETE FROM stocks WHERE id = :id');
-        $stmt->execute(['id' => $id]);
+        $this->connection->prepare('DELETE FROM transactions WHERE stock_id = :id')->execute(['id' => $id]);
+        $this->connection->prepare('DELETE FROM holdings WHERE stock_id = :id')->execute(['id' => $id]);
+        $this->connection->prepare('DELETE FROM stocks WHERE id = :id')->execute(['id' => $id]);
+    }
+
+    public function countHolders(int $stockId): int
+    {
+        $stmt = $this->connection->prepare(
+            'SELECT COUNT(DISTINCT user_id) FROM holdings WHERE stock_id = :stock_id'
+        );
+        $stmt->execute(['stock_id' => $stockId]);
+
+        return (int) $stmt->fetchColumn();
     }
 
     public function count(?string $search, ?string $sector): int
@@ -243,6 +254,10 @@ class StockRepository extends Repository
         $stock->last_fetched_at = $row['last_fetched_at'];
         $stock->created_at = $row['created_at'];
         $stock->updated_at = $row['updated_at'];
+
+        if (isset($row['holders'])) {
+            $stock->holders = (int) $row['holders'];
+        }
 
         return $stock;
     }
