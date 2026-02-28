@@ -18,4 +18,12 @@ mysqldata/
 # Environment
 .env
 
+# Claude
 .claude/*
+
+# Assignment files (not part of source)
+*.pdf
+*.csv
+docs/plans/
+Dividend Dashboard.jsx
+Instructions.md
