@@ -16,6 +16,7 @@ services:
     working_dir: /app
     volumes:
       - ./api:/app
+    command: sh -c "composer install --no-interaction && php-fpm"
 
   node:
     build:
